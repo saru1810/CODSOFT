@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -5,8 +6,14 @@ require('dotenv').config();
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+// ✅ Allow CORS for deployed frontend
+const corsOptions = {
+  origin: ['https://quiz-maker-frontend.onrender.com', 'http://localhost:3000'],
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+// Middleware
 app.use(express.json());
 
 // Routes
@@ -16,18 +23,18 @@ app.use('/api/auth', authRoutes);
 const quizRoutes = require('./routes/quiz');
 app.use('/api/quiz', quizRoutes);
 
-// Health check route
+// Health check
 app.get('/', (req, res) => {
   res.send('Quiz Maker Backend Running ✅');
 });
 
-// Environment variables
+// Port and DB URI
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 console.log("📡 Connecting to MongoDB:", MONGO_URI);
 
-// MongoDB connection (modern setup)
+// MongoDB connection
 mongoose.connect(MONGO_URI)
   .then(() => {
     app.listen(PORT, () => {
